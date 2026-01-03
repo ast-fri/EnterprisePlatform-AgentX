@@ -1,0 +1,20 @@
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm
+
+RUN adduser agent
+USER agent
+WORKDIR /home/agent
+
+# Copy project files
+COPY --chown=agent:agent pyproject.toml uv.lock README.md ./
+COPY --chown=agent:agent purple_agent.py purple_server.py ./
+
+# Install dependencies
+RUN \
+    --mount=type=cache,target=/home/agent/.cache/uv,uid=1000 \
+    uv sync --locked
+
+ENV PYTHONUNBUFFERED=1
+
+ENTRYPOINT ["uv", "run", "purple_server.py"]
+CMD ["--host", "0.0.0.0", "--port", "8001"]
+EXPOSE 8001

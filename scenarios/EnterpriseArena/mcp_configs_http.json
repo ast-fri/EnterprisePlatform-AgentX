@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+            "rocktchat": {
+                "transport": "streamable_http",
+                "url": "http://localhost:12004/mcp"
+            },
+            "plane": {
+                "transport": "streamable_http",
+                "url": "http://localhost:12002/mcp/"
+            },
+            "owncloud": {
+                "transport": "streamable_http",
+                "url": "http://localhost:12001/mcp"
+            }
+    }
+}
