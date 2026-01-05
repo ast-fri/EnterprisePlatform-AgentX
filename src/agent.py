@@ -60,7 +60,7 @@ class Agent:
         if not env_config_str:
             env_config_str = json.dumps({
                 "tasks_file": "tasks.json",
-                "mcp_config_path": "/app/mcp_configs_http.json",
+                "mcp_config_path": "./mcp_configs_http.json",
                 "task_indices": [0, 1, 2],
                 "max_steps": 15
             })
