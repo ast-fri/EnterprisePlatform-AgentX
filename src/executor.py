@@ -11,7 +11,7 @@ from a2a.types import (
 from a2a.utils.errors import ServerError
 from a2a.utils import new_agent_text_message, new_task
 
-from src.agent import Agent
+from agent import Agent
 
 
 TERMINAL_STATES = {

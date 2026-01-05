@@ -9,17 +9,17 @@ from a2a.server.tasks import TaskUpdater
 from a2a.types import Message, TaskState, Part, TextPart, DataPart
 from a2a.utils import get_message_text, new_agent_text_message
 
-from src.messenger import Messenger
+from messenger import Messenger
 
 # Import your existing modules
-from src.env import (
+from env import (
     load_env_config,
     load_all_tasks,
     prepare_env_for_single_task,
     build_white_agent_task_prompt,
 )
-from src.judge import judge_task
-from src.my_util import parse_tags
+from judge import judge_task
+from my_util import parse_tags
 
 
 class Agent:

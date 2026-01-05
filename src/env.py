@@ -113,7 +113,7 @@ import json
 from pathlib import Path
 from typing import Dict, Any, List, Tuple
 
-from src.mcp_tools import load_mcp_tools_with_sessions
+from mcp_tools import load_mcp_tools_with_sessions
 
 
 def load_env_config(env_config_str: str) -> Dict[str, Any]:
