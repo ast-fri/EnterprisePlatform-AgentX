@@ -32,34 +32,43 @@ class Agent:
         """
         Main evaluation flow for EnterpriseArena green agent.
         
-        Expects input message with:
-        <white_agent_url>...</white_agent_url>
-        <env_config>...</env_config>
+        Auto-discovers purple agent from message or environment.
         """
         input_text = get_message_text(message)
         
-        # Parse input
+        # Try to parse XML tags first
         tags = parse_tags(input_text)
         white_agent_url = tags.get("white_agent_url")
         env_config_str = tags.get("env_config")
         
+        # If no XML tags, try to discover purple agent
         if not white_agent_url:
-            await updater.failed(
-                new_agent_text_message(
-                    "❌ Error: Missing <white_agent_url> in request",
-                    context_id=message.context_id,
-                    task_id=message.task_id
+            white_agent_url = await self._discover_purple_agent(message)
+            
+            if not white_agent_url:
+                await updater.failed(
+                    new_agent_text_message(
+                        "❌ Error: Could not discover purple agent URL. "
+                        "Please provide <white_agent_url> in message or check network configuration.",
+                        context_id=message.context_id,
+                        task_id=message.task_id
+                    )
                 )
-            )
-            return
+                return
         
         # Use default config if not provided
         if not env_config_str:
             env_config_str = json.dumps({
                 "tasks_file": "tasks.json",
                 "mcp_config_path": "/app/mcp_configs_http.json",
-                "max_steps": 10
+                "task_indices": [0, 1, 2],
+                "max_steps": 15
             })
+            print(f"⚠️  No env_config found in message, using default")
+        
+        print(f"🟢 Configuration:")
+        print(f"  - Purple agent URL: {white_agent_url}")
+        print(f"  - Environment config: {env_config_str}")
         
         await updater.update_status(
             TaskState.working,
@@ -96,6 +105,65 @@ class Agent:
                     task_id=message.task_id
                 )
             )
+
+
+    async def _discover_purple_agent(self, message: Message) -> str | None:
+        """
+        Auto-discover purple agent URL from environment.
+        
+        Tries multiple methods:
+        1. Environment variable
+        2. Docker network scan
+        3. Extract from message text
+        """
+        import os
+        import re
+        import socket
+        
+        # Method 1: Check environment variable
+        purple_url = os.getenv("PURPLE_AGENT_URL")
+        if purple_url:
+            print(f"🔍 Found purple agent from env: {purple_url}")
+            return purple_url
+        
+        # Method 2: Extract URL from message text
+        input_text = get_message_text(message)
+        urls = re.findall(r'https?://[^\s<>"]+', input_text)
+        if urls:
+            print(f"🔍 Found purple agent from message: {urls[0]}")
+            return urls[0]
+        
+        # Method 3: Scan common Docker container names on port 9009
+        common_names = [
+            "EnterprisePurpleAgent",
+            "purple-agent",
+            "white-agent",
+            "participant",
+            "solver",
+        ]
+        
+        for name in common_names:
+            try:
+                # Try to resolve hostname
+                socket.gethostbyname(name)
+                candidate_url = f"http://{name}:9009"
+                
+                # Verify it has an agent-card
+                try:
+                    import httpx
+                    async with httpx.AsyncClient(timeout=2.0) as client:
+                        response = await client.get(f"{candidate_url}/.well-known/agent-card.json")
+                        if response.status_code == 200:
+                            print(f"🔍 Discovered purple agent at: {candidate_url}")
+                            return candidate_url
+                except Exception:
+                    pass
+            except socket.gaierror:
+                continue
+        
+        print("❌ Could not auto-discover purple agent")
+        return None
+
 
     async def _run_evaluation(
         self,
