@@ -57,6 +57,7 @@ jobs:
 
       - name: Install test dependencies
         run: uv sync --extra test
+        continue-on-error: true
 
       - name: Run tests
         run: uv run pytest -v --agent-url http://localhost:9009
