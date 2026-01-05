@@ -15,8 +15,8 @@ COPY --chown=agent:agent pyproject.toml uv.lock README.md ./
 COPY --chown=agent:agent src src
 
 # Copy EnterpriseArena specific files
-COPY --chown=agent:agent tasks.json ./tasks.json
-COPY --chown=agent:agent mcp_configs_http.json ./mcp_configs_http.json
+COPY --chown=agent:agent tasks.json src/tasks.json
+COPY --chown=agent:agent mcp_configs_http.json src/mcp_configs_http.json
 
 # Create results directory
 RUN mkdir -p /home/agent/results
