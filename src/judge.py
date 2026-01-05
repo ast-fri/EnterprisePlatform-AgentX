@@ -9,11 +9,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-_llm_judge = AzureChatOpenAI(
-    azure_deployment="gpt-4o",
-    api_version="2024-02-01",
-    temperature=0,
-)
+_llm_judge = None
+
+
+def get_llm_judge():
+    """Lazy load the LLM judge to allow environment variables to be set first."""
+    global _llm_judge
+    if _llm_judge is None:
+        _llm_judge = AzureChatOpenAI(
+            azure_deployment=os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o"),
+            api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-01"),
+            temperature=0,
+        )
+    return _llm_judge
 
 
 async def judge_task(
@@ -71,6 +79,7 @@ Do not add any text outside of this JSON.
 {final_answer}
 """
 
+    _llm_judge = get_llm_judge()
     resp = await _llm_judge.ainvoke(
         [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
     )
