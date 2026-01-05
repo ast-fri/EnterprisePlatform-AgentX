@@ -1,45 +1,18 @@
-# scenarios/EnterpriseArena/scenario.toml
-
-[assessment]
-# Unique identifier for this scenario
-id = "enterprise-mcp-tools"
-name = "Enterprise MCP Tool Usage Assessment"
-description = """
-Evaluate agents on their ability to use enterprise MCP tools for multi-step tasks.
-Tasks include querying databases, managing files, accessing web APIs, and reasoning
-over multiple tool calls to solve complex enterprise problems.
-"""
-version = "1.0.0"
-
-# Green agent configuration
 [green_agent]
-image = "ghcr.io/YOUR_USERNAME/enterprise-arena-green:latest"
-# For local development:
-# command = "uv run src/server.py"
-# For AgentBeats platform (using Docker):
-command = "--host 0.0.0.0 --port 9009"
-port = 9009
-health_check = "http://localhost:9009/.well-known/agent-card.json"
+endpoint = "http://127.0.0.1:9009"
+cmd = "python src/server.py --host 127.0.0.1 -port 9009"
 
-# Purple agent participants
+
 [[participants]]
-role = "solver"
-name = "Baseline Enterprise Agent"
-image = "ghcr.io/YOUR_USERNAME/enterprise-baseline-purple:latest"
-# For local development:
-# command = "uv run src/server.py"
-# For AgentBeats platform (using Docker):
-command = "--host 0.0.0.0 --port 9002"
-port = 9002
-health_check = "http://localhost:9002/.well-known/agent-card.json"
+role = "agent"
+endpoint = "http://127.0.0.1:9002"
+cmd = "python scenarios/EnterpriseArena/purple_server.py --host 127.0.0.1 --port 9002"
 
 # Assessment configuration passed to green agent
 [config]
 tasks_file = "tasks.json"
-# Run specific task indices (comment out to run all tasks)
-# task_indices = [0, 1, 2]
 max_steps = 15
-mcp_config_path = "/app/mcp_configs_http.json"
+mcp_config_path = "./mcp_configs_http.json"
 
 # Timeout for the entire assessment (in seconds)
 timeout = 1800  # 30 minutes

@@ -18,7 +18,8 @@ from a2a.utils.errors import ServerError
 
 from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
-
+from dotenv import load_dotenv
+load_dotenv()
 
 class BaselineAgent:
     """Simple ReAct-style baseline purple agent for enterprise tasks."""
