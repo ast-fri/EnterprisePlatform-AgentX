@@ -179,10 +179,8 @@ class Agent:
         all_tasks = load_all_tasks(tasks_file)
         
         # Determine which tasks to run
-        if "task_indices" in env_config:
-            task_indices = env_config["task_indices"]
-        else:
-            task_indices = list(range(len(all_tasks)))
+        
+        task_indices = list(range(len(all_tasks)))
         
         max_steps = env_config.get("max_steps", 10)
         
