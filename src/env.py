@@ -24,7 +24,6 @@ def load_all_tasks(tasks_file: str) -> List[Dict[str, Any]]:
     with tasks_path.open("r") as f:
         return json.load(f)  # list of { "query": ... }
 
-task_indices
 async def prepare_env_for_single_task(
     env_config: Dict[str, Any],
     task_index: int,
