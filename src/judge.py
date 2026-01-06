@@ -2,7 +2,7 @@
 
 from typing import Dict, Any
 import json
-
+import os  # Add this line
 from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
